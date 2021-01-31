@@ -109,11 +109,14 @@ class App extends Component {
             isLoggedIn:this.state.isLoggedIn,
             color1: '#fff',
             color2: '#999',
-            color3: '#555'
+            color3: '#555',
+            color4: '#4b9cd5',
+            color5: '#aa3333'
         };
 
-        var content = this.state.loading ? <Loading /> :
-            <Home data={propsData}/>
+        var content = this.state.loading ? <Loading data={propsData}/> : <Home data={propsData}/>;
+        //var content = <Loading data={propsData}/>;
+        
         return (
           <BrowserRouter>
                 <Switch>

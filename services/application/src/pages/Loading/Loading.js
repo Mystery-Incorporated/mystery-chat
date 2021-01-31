@@ -41,9 +41,6 @@ class Loading extends Component {
     }
 
     render() {
-        const grey = "#474442";
-        const offWhite = "#fde0bc";
-        const orange = "#f2664a";
 
         return (
             <Grommet>
@@ -56,10 +53,10 @@ class Loading extends Component {
                     margin={{"top":"100px", "bottom":"100px"}}
                 >
                     <Box 
-                        direction="column"
+                        direction="row"
                         pad="none"
-                        width="100%"
-                        min-height="100%"
+                        width="auto"
+                        min-height="auto"
                         background="none"
                         overflow="auto"
                         align="center" 
@@ -69,17 +66,17 @@ class Loading extends Component {
                     >
                         <WorldMap
                             alignSelf="center"
-                            color={offWhite}
+                            color={this.props.data.color2}
                             onSelectPlace={(lat, lon) => {}}
                             places={[
                                 {
                                     name: 'Sydney',
                                     location: this.state.x != null ? [this.state.x, this.state.y]: [],
-                                    color: orange,
+                                    color: this.props.data.color3,
                                     onClick: (name) => {},
                                 },
                             ]}
-                            selectColor={orange}
+                            selectColor={this.props.data.color2}
                         />
                     </Box>
                 </Box>

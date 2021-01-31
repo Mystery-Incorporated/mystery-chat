@@ -22,6 +22,7 @@ import {
   } from "grommet";
   import { grommet } from "grommet/themes";
   import { MailOption, Hide, View, Add, FormClose, StatusGood, Tag, Alert, User  } from 'grommet-icons';
+  import {Spinner} from 'Components';
 
 class Register extends Component {
 
@@ -191,13 +192,13 @@ class Register extends Component {
                 overflow="auto"
                 round="xsmall"
             >
-                <Box width="100%" background={this.props.data.color3} pad="large"> 
+                <Box width="100%" background={this.props.data.color4} pad="large"> 
                     <Text color={this.props.data.color1} size="xxlarge">Registration</Text>
                 </Box>
                 {this.state.error != '' && 
-                <Box width="100%" background={this.props.data.color2} pad="small" direction="row" align="center"> 
+                <Box width="100%" background={this.props.data.color5} pad="small" direction="row" align="center"> 
                     <Alert color={this.props.data.color1} />
-                    <Text margin="small" color={this.props.data.color1} size="medium">{this.state.error}</Text>
+                    <Text margin="xsmall" color={this.props.data.color1} size="medium">{this.state.error}</Text>
                 </Box>}
                 <Box pad="large">
                     <Form
@@ -304,7 +305,17 @@ class Register extends Component {
                             </Layer>
                         )}
                         <Box direction="row" gap="medium" margin={{"top":"40px"}}>
-                            <Button type="submit" primary label="Register" color={this.props.data.color2}/>
+                            <Button 
+                                type="submit"
+                                primary 
+                                label={this.state.working ? (
+                                    <Box direction="row" gap="small">
+                                        {" "}
+                                        <Spinner color="#fff" /> <Text size="medium"> Registering... </Text>
+                                    </Box>
+                                ):("Register")} 
+                                color={"#000"}
+                            />
                             <Button label="Cancel" color={this.props.data.color2} onClick={() => this.props.history.push("/")}/>
                         </Box>
                     </Form>
@@ -321,7 +332,7 @@ class Register extends Component {
                     justify="center" 
                     margin={{"top":"50px", "bottom":"100px"}}
                 >
-                    {this.state.working && 
+                    {/* {this.state.working && 
                         <Layer animation="fadeIn" modal={true}>
                             <Box background={this.props.data.color2} align="center" justify="center" pad="none" >
                                 <Box background={this.props.data.color2} align="center" justify="center" pad="large" round="small">
@@ -329,7 +340,7 @@ class Register extends Component {
                                 </Box>
                             </Box>
                         </Layer>
-                    }
+                    } */}
                     
                     <ResponsiveContext.Consumer>
                         {responsive => responsive === "small" ? (
@@ -340,7 +351,7 @@ class Register extends Component {
                                 min-height="90%"
                                 background={this.props.data.color1}
                                 overflow="auto"
-                                round="xsmall"
+                                round="xxsmall"
                                 elevation="small"
                             >
                                 {regFormCont}
@@ -353,7 +364,7 @@ class Register extends Component {
                                 min-height="70%"
                                 background={this.props.data.color1}
                                 overflow="auto"
-                                round="xsmall"
+                                round="xxsmall"
                                 elevation="small"
                             >
                                 {regFormCont}

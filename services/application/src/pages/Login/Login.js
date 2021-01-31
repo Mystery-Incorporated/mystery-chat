@@ -18,9 +18,12 @@ import {
     Text,
     Layer,
     ResponsiveContext
-  } from "grommet";
-  import { grommet } from "grommet/themes";
-  import { MailOption, Hide, View, Add, FormClose, StatusGood, Alert  } from 'grommet-icons';
+} from "grommet";
+
+import { grommet } from "grommet/themes";
+import { MailOption, Hide, View, Add, FormClose, StatusGood, Alert  } from 'grommet-icons';
+
+import {Spinner} from 'Components';
 
 class Login extends Component {
 
@@ -155,13 +158,13 @@ class Login extends Component {
                 overflow="auto"
                 round="xsmall"
             >
-                <Box width="100%" background={this.props.data.color2} pad="large"> 
+                <Box width="100%" background={this.props.data.color4} pad="large"> 
                     <Text color={this.props.data.color1} size="xxlarge">Sign In</Text>
                 </Box>
                 {this.state.error != '' && 
-                <Box width="100%" background={this.props.data.color3} pad="small" direction="row" align="center"> 
+                <Box width="100%" background={this.props.data.color5} pad="small" direction="row" align="center"> 
                     <Alert color={this.props.data.color1} />
-                    <Text margin="small" color={this.props.data.color1} size="medium">{this.state.error}</Text>
+                    <Text margin="xsmall" color={this.props.data.color1} size="medium">{this.state.error}</Text>
                 </Box>}
                 <Box pad="large">
                     <Form
@@ -222,7 +225,18 @@ class Login extends Component {
                             </Layer>
                         )}
                         <Box direction="row" gap="medium" margin={{"top":"40px"}}>
-                            <Button type="submit" primary label="Login" color={this.props.data.color3}/>
+
+                            <Button 
+                                type="submit"
+                                primary 
+                                label={this.state.working ? (
+                                    <Box direction="row" gap="small">
+                                        {" "}
+                                        <Spinner color="#fff" /> <Text size="medium"> Logging in... </Text>
+                                    </Box>
+                                ):("Login")} 
+                                color={"#000"}
+                            />
                             <Button label="Cancel" color={this.props.data.color3} onClick={() => this.props.history.push("/")}/>
                         </Box>
                     </Form>
@@ -241,7 +255,7 @@ class Login extends Component {
                     margin={{"top":"100px", "bottom":"100px"}}
                 >
 
-                    {this.state.working && 
+                    {/* {this.state.working && 
                         <Layer animation="fadeIn" modal={true}>
                             <Box background={this.props.data.color3} align="center" justify="center" pad="none" >
                                 <Box background={this.props.data.color3} align="center" justify="center" pad="large" round="small">
@@ -249,7 +263,7 @@ class Login extends Component {
                                 </Box>
                             </Box>
                         </Layer>
-                    }
+                    } */}
 
                     
                     <ResponsiveContext.Consumer>
@@ -261,7 +275,7 @@ class Login extends Component {
                                 min-height="90%"
                                 background={this.props.data.color1}
                                 overflow="auto"
-                                round="xsmall"
+                                round="xxsmall"
                                 elevation="small"
                             >
                                 {form}
@@ -274,7 +288,7 @@ class Login extends Component {
                                 min-height="70%"
                                 background={this.props.data.color1}
                                 overflow="auto"
-                                round="xsmall"
+                                round="xxsmall"
                                 elevation="small"
                             >
                                 {form}
