@@ -137,7 +137,6 @@ function sendEmail(email, token, req, res) {
 }
 
 function createUser(data, callback) {
-    console.log(data);
     var salt = bcrypt.genSaltSync(15);
     var pass = bcrypt.hashSync(data.password, salt);
     var user = {
@@ -153,15 +152,23 @@ function createUser(data, callback) {
     Users.create(user, callback);
 }
 
-function updateUserInfo(email, data, callback) {
-    var user = {username: data.username};
-    if (data.password){
-        var salt = bcrypt.genSaltSync(15);
-        var pass = bcrypt.hashSync(data.password, salt);
-        user.password = pass;
-    }
+function updateUserInfo(email, formData, callback) {
+    findByEmail(email, (err, data) => {
+        if (data) {
+            var user = formData;
+            if (formData.password) {
+                if (formData.password){
+                    var salt = bcrypt.genSaltSync(15);
+                    var pass = bcrypt.hashSync(formData.password, salt);
+                    user.password = pass;
+                }
+            }
 
-    Users.updateOne({ email: email }, { $set: user }, callback);
+            Users.updateOne({ email: email }, { $set: user }, callback);
+        }
+    })
+
+    
 }
 
 module.exports = function(app) {
@@ -179,7 +186,6 @@ module.exports = function(app) {
                             // tag doesn't exist we are good
                             createUser(formData, (err, data) => {
                                 if (err) {
-                                    console.log(err)
                                     var errType = err.name;
                                     if (errType === 'ValidationError') {
                                         // go through each error ( there will only be one but still)
@@ -232,7 +238,6 @@ module.exports = function(app) {
         }
         else {
             findByEmail(formData.email, (err, data) => {
-                console.log(data);
                 return login(err, data, formData.password, req, res);
             });
         }
@@ -267,7 +272,6 @@ module.exports = function(app) {
 
     app.get('/api/users/:user', function(req, res) {
         var user = req.params.user;
-
         findByUsername(user, (err, data) => {
             if (err || !data) {
                 return res.status(404).json({ error: 1, msg: "Could not find user!" });
@@ -278,9 +282,10 @@ module.exports = function(app) {
                     lastname: data.lastname,
                     username: data.username,
                     avatar: data.avatar,
-                    verified: data.verified
+                    verified: data.verified,
+                    dob:data.dob
                 };
-                return res.status(200).json({ data: result });
+                return res.status(200).json(data);
             }
         });
     });
@@ -298,7 +303,7 @@ module.exports = function(app) {
                 return res.status(500).json({ error: 1, msg: "Could not update user!" });
             }
             else {
-                return res.status(200).json({  username: formData.username });
+                return res.status(200).json({data: "success"});
             }
         });
     });

@@ -59,7 +59,7 @@ class Dashboard extends Component {
                 <Box
                     direction="column"
                     pad="none"
-                    background={this.props.data.color2}
+                    background={this.props.data.color1}
                     fill
                     align="center"
                     justify="center"

@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import './App.css';
 
 import { Link, Route, Switch, BrowserRouter } from 'react-router-dom';
-import { Box, Heading, Grommet } from 'grommet';
-
 import { Home, Login, Logout, Register, Loading, Verify, Profile } from 'Pages';
+
+
+import { grommet, Grommet, Anchor, Box, Button, Header, Nav, Image, Avatar, Text, ResponsiveContext } from 'grommet';
+import { Notes, Organization, User, StatusCritical, Refresh, CheckboxSelected } from "grommet-icons";
 
 class App extends Component {
     _isMounted = false;
@@ -137,7 +139,7 @@ class App extends Component {
                         <Verify data={propsData}/>
 
                     }/>
-                    <Route exact path="/profile" component={() =>
+                    <Route exact path="/user/:id" component={() =>
                         <Profile data={propsData}/>
 
                     }/>

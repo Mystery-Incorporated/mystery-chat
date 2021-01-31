@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { Link, Route, Switch, BrowserRouter} from 'react-router-dom';
+import { Link, Route, Switch, BrowserRouter, useParams} from 'react-router-dom';
 import queryString from 'query-string'
 
 import "./Profile.css";
@@ -20,42 +20,31 @@ import {
 
 } from 'grommet';
 import { grommet } from "grommet/themes";
+import { Previous } from "grommet-icons";
 
-import { 
-    Login, 
-    Organization, 
-    User, 
-    CloudUpload, 
-    MailOption, 
-    Hide, 
-    View, 
-    Add, 
-    FormClose, 
-    StatusGood, 
-    Tag, 
-    Alert
-} from "grommet-icons";
-import { AiFillEdit,  } from "react-icons/ai";
-import { RiGamepadLine } from "react-icons/ri";
-import { IoMdTrophy } from "react-icons/io";
-import { GiLibertyWing, GiMinigun } from "react-icons/gi";
-import { FaSkull } from "react-icons/fa";
+import Avatar from 'react-avatar-edit'
 
 class Profile extends Component {
     _isMounted = false;
 
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
 
-            password:null,
-            password2:null,
-            reveal: false,
-            message: null,
-            canEdit:false,
-            edit:false,
-            error:'',
+            id:'',
+            personal:false,
+            invalid:false,
+            firstname: '',
+            lastname: '',
+            username: '',
+            avatar: '',
+            dob: '',
+            avatarSrc:''
+
         };
+        this.onCrop = this.onCrop.bind(this);
+        this.onClose = this.onClose.bind(this);
+        this.onBeforeFileLoad = this.onBeforeFileLoad.bind(this);
         
     }
 
@@ -81,64 +70,6 @@ class Profile extends Component {
         });
     }
 
-    setReveal = (val) => {
-        this.setState({reveal: val});
-    }
-
-    setInvalid = (val) => {
-        console.log(val);
-        this.setState({invalid: val});
-    }
-
-    setWorking = (working) => {
-        this.setState({working:working});
-    }
-
-    setEdit = (edit) => {
-        this.setState({edit: edit, error:''});
-    }
-
-    saveData = () => {
-        
-        console.log(this.state);
-        this.setState({
-            error:''
-        });
-
-        if (this.state.password != this.state.password2) {
-            this.setState({message: "Password does not match."});
-        }
-        else {  
-            fetch('/api/users/update', {
-                method: 'POST',
-                body: JSON.stringify({
-                    username:this.state.username,
-                    password:this.state.password
-                }),
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',  // It can be used to overcome cors errors
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(res => {
-                return res.json();
-            })
-            .then(data => {
-                if ('error' in data) {
-                    this.setState({error: data.msg});
-                }
-                else {
-                    this.setState({edit: false, username:data.username});
-                    console.log(this.state);
-                }
-            }) 
-            .catch(err => {
-                alert('Error logging in please try again');
-            });
-            
-        }
-    }
-
     onSubmit = (event) => {
         event.preventDefault();
     }
@@ -151,46 +82,64 @@ class Profile extends Component {
         this._isMounted = true;
 
         if (this._isMounted) {
-            const values = queryString.parse(this.props.location.search)
-            var user = values.user ;
-
-            if (!user) {
-                user = this.props.data.username;
-                this.setState({canEdit: true});
-            }
-
-            if (user) {
-                fetch('/api/users/' + user, {
-                    headers: {
-                        'Accept': 'application/json, text/plain, */*',  // It can be used to overcome cors errors
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(res => {
-                    return res.json();
-                })
-                .then(data => {
-                    if (data) {
-                        if ('error' in data) {
-                            if (this._isMounted) {
-                                this.setState({error: data.msg});
-                            }
-                        }
-                        else {
-                            if (this._isMounted) {
-                                this.setState({
-                                    data: data.data,
-                                    username: this.props.data.username
-                                });
-                            }
-                        }
-                    }
-                }) 
-                .catch(err => {
-                    console.error(err);
-                });
-            }
+            this.setState({id: this.props.match.params.id});
         }
+
+        fetch('/api/users/' + this.props.match.params.id, {
+            headers: {
+                'Accept': 'application/json, text/plain, */*',  // It can be used to overcome cors errors
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => {
+            if (res.status === 200) {
+                return res.json();
+            } else {
+                if (this._isMounted) {
+                    this.setState({
+                        msg: "Profile does not exist",
+                        invalid:true
+                    });
+                }
+            }
+        })
+        .then(data => {
+            console.log("DATA", data)
+            if (data) {
+                this.setState({
+                    firstname: data.firstname,
+                    lastname: data.lastname,
+                    username: data.username,
+                    avatar: data.avatar,
+                    avatarSrc:data.avatarSrc,
+                    dob: data.dob,
+                    personal: data.username == this.props.data.username
+                });
+                
+            }
+            
+        }) 
+        .catch(err => {
+            console.error(err);
+            alert('Error checking token');
+        });
+    }
+
+    onClose() {
+        this.setState({avatar: null})
+    }
+    
+    onCrop(preview) {
+        console.log(this.state)
+        this.setState({avatar:preview})
+    }
+
+    onBeforeFileLoad(elem) {
+        console.log(elem.target.files[0].size);
+        if(elem.target.files[0].size > 5571680){
+            alert("File is too big!");
+            elem.target.value = "";
+        };
     }
     
 
@@ -200,8 +149,98 @@ class Profile extends Component {
         const onOpen = () => this.setInvalid(true);
         const onClose = () => this.setInvalid(undefined);
 
+        var profileCont =
+            <Box
+                width="100%"
+                height="auto"
+            >
+                <Box
+                    width="100%"
+                    height="300px"
+                    border="bottom"
+                    direction="column"
+                    justify="start"
+                    align="center"
+                >
+                    <Box
+                        direction="row"
+                    >
+                        <Avatar
+                            width={390}
+                            height={295}
+                            onCrop={this.onCrop}
+                            onClose={this.onClose}
+                            onBeforeFileLoad={this.onBeforeFileLoad}
+                            src={this.state.avatar}
+                        />
+                        <img src={this.state.avatar} alt="Preview" width="300px" height="auto"/>
+                    </Box>
+                </Box>
+            </Box>
+
         return (
-            <Box>Test</Box>
+            <Grommet theme={grommet} full background={this.props.data.color1}>
+            
+                <Box
+                    width="100vw"
+                    height="100vh"
+                    direction="column"
+                    gap="xxsmall"
+                >
+                    <Box
+                        width="100%"
+                        direction="row"
+                        align="center"
+                        justify="start"
+                        pad="small"
+                    >
+                        <Link to="/" style={{ textDecoration: 'none' }}>
+                            <Box direction="row" align="center" gap="xsmall"  justify="center">
+                                <Previous color={this.props.data.color3} size='20px' />
+                                <Text color={this.props.data.color3}>Back</Text>
+                            </Box>
+                        </Link>
+                    </Box>
+
+                    <Box
+                        fill
+                        direction="row"
+                        align="start"
+                        justify="center"
+                    >
+                         <ResponsiveContext.Consumer>
+                            {responsive => responsive === "small" ? (
+                                <Box
+                                    pad="none"
+                                    width="95%"
+                                    height="auto"
+                                    round="small"
+                                    direction="row"
+                                    align="center"
+                                    justify="center"
+                                    gap="small"
+                                >
+                                    {profileCont}
+                                </Box>
+                            ) : (
+                                <Box
+                                    pad="none"
+                                    width="60%"
+                                    height="auto"
+                                    round="small"
+                                    direction="row"
+                                    align="center"
+                                    justify="center"
+                                    gap="small"
+                                >
+                                    {profileCont}
+                                </Box>
+                            )}
+                        </ResponsiveContext.Consumer>
+                    </Box>
+
+                </Box>
+            </Grommet>
         );
     }
     

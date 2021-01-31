@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Link, Route, Switch, BrowserRouter } from 'react-router-dom';
 
-import { grommet, Grommet, Anchor, Box, Button, Header, Nav, Image, Avatar, Text, ResponsiveContext } from 'grommet';
+import { grommet, Grommet, Anchor, Box, Button, Header, Nav, Image, Avatar, Text, ResponsiveContext, DropButton } from 'grommet';
 
 import { Login, Notes, Logout, Organization, User, StatusCritical, Refresh, CheckboxSelected } from "grommet-icons";
 import "./Home.css";
 
-import {Banner} from 'Media';
+import {Banner, Logo} from 'Media';
 import {Dashboard} from 'Components';
 
 class Home extends Component {
@@ -70,38 +70,43 @@ class Home extends Component {
 
                 {this.state.isLoggedIn ?
                     <Box
-                        direction="column"
                         pad="none"
                         width="100vw"
                         height="100vh"
                         round="small"
                         direction="column"
-                        gap="small"
+                        gap="xxsmall"
+                        align="center"
+                        justify="center"                        
                     >
-
-                        <Box width="100%" direction="row" align="center" justify="between" background={this.props.data.color3} pad="small">
-                            
-                            <Box direction="row" align="center" gap="small">
-                                {this.state.isLoggedIn && 
-                                    <Avatar background={this.props.data.color2}>
-                                        <User color="dark-1" />
-                                    </Avatar>
-                                }
-                                {!this.state.isLoggedIn && 
-                                    <Anchor color={this.props.data.color1}>
-                                        {this.props.data.firstname + " " + this.props.data.lastname}
-                                    </Anchor>
-                                }
-                                {this.state.isLoggedIn && 
-                                    <Link to="/profile" style={{ textDecoration: 'none' }}>
-                                        <Anchor color={this.props.data.color1}>
-                                            {this.props.data.firstname + " " + this.props.data.lastname}
-                                        </Anchor>
-                                    </Link>
-                                }
+                        <Box 
+                            width="100%" 
+                            direction="row" 
+                            align="center" 
+                            justify="between" 
+                            background={this.props.data.color1} 
+                            pad="xsmall" 
+                            border="bottom"
+                        >
+                                
+                            <Box direction="row" align="center">
+                                <Link to={"/"} style={{ textDecoration: 'none' }}>
+                                    <Box
+                                        pad="none"
+                                        height="auto"
+                                        width="60px"
+                                        round="small"
+                                        direction="row"
+                                        align="center"
+                                        margin={{"left":"5px"}}
+                                        gap="xsmall"
+                                    >
+                                        <Image src={Logo} fit="contain"/>
+                                    </Box>
+                                </Link>
                             </Box>
-                            <Nav direction="row">
-                                {!this.props.data.verified && this.state.isLoggedIn &&
+                            <Nav direction="row" align="center">
+                                {!this.props.data.verified &&
                                     <Box width={{"min":"200px"}} height="45px" direction="row" background={this.props.data.color3} round="medium" align="center" gap="small" pad="small">
                                         <StatusCritical color={this.props.data.color2} />
                                         <Text color={this.props.data.color2}>Email not verified!</Text>
@@ -128,42 +133,39 @@ class Home extends Component {
                                         }
                                     </Box>
                                 }
-                                <Link to="/" style={{ textDecoration: 'none' }}>
-                                    <Box direction="row" align="center">
-                                        <Organization color={this.props.data.color2} size='20px' />
-                                        <Anchor label="Home" key="Home" color={this.props.data.color1} margin="xsmall"/>
+
+                                <Link to={"/user/" + this.props.data.username} style={{ textDecoration: 'none' }}>
+                                    <Box
+                                        direction="row"
+                                        gap="xsmall"
+                                        align="center"
+                                        justify="center"
+                                    >
+                                        <Avatar background={this.props.data.color1}>
+                                            <User color="dark-1" />
+                                        </Avatar>
+                                        <Text color={this.props.data.color3}>
+                                            {this.props.data.firstname}
+                                        </Text>
+                                    </Box>
+                                    
+                                </Link>
+
+                                <Link to="/settings" style={{ textDecoration: 'none' }}>
+                                    <Box direction="row" align="center" gap="xsmall"  justify="center">
+                                        <Logout color={this.props.data.color3} size='20px' />
+                                        <Text color={this.props.data.color3}>Settings</Text>
                                     </Box>
                                 </Link>
 
-                                {!this.state.isLoggedIn && 
-                                    <Link to="/register" style={{ textDecoration: 'none' }}>
-                                        <Box direction="row" align="center">
-                                            <Notes color={this.props.data.color2} size='20px' />
-                                            <Anchor label="Register" key="Register" color={this.props.data.color1}  margin="xsmall"/>
-                                        </Box>
-                                    </Link>
-                                }
-                                
-                                {!this.state.isLoggedIn && 
-                                    <Link to="/login" style={{ textDecoration: 'none' }}>
-                                        <Box direction="row" align="center">
-                                            <Login color={this.props.data.color2} size='20px' />
-                                            <Anchor label="Login" key="Login" color={this.props.data.color1}  margin="xsmall"/>
-                                        </Box>
-                                    </Link>
-                                }
-
-                                {this.state.isLoggedIn && 
-                                    <Link to="/logout" style={{ textDecoration: 'none' }}>
-                                        <Box direction="row" align="center">
-                                            <Logout color={this.props.data.color2} size='20px' />
-                                            <Anchor label="Logout" key="Logout" color={this.props.data.color1}  margin="xsmall"/>
-                                        </Box>
-                                    </Link>
-                                }
+                                <Link to="/logout" style={{ textDecoration: 'none' }}>
+                                    <Box direction="row" align="center" gap="xsmall"  justify="center">
+                                        <Logout color={this.props.data.color3} size='20px' />
+                                        <Text color={this.props.data.color3}>Logout</Text>
+                                    </Box>
+                                </Link>
                             </Nav>
                         </Box>
-
                         <Box fill background='none'>
                             <Dashboard data={this.props.data}/>
                         </Box>
@@ -223,18 +225,18 @@ class Home extends Component {
                         >
                             {!this.state.isLoggedIn && 
                                 <Link to="/register" style={{ textDecoration: 'none' }}>
-                                    <Box direction="row" align="center">
+                                    <Box direction="row" align="center" gap="xsmall">
                                         <Notes color={this.props.data.color2} size='20px' />
-                                        <Anchor label="Register" key="Register" color={this.props.data.color3}  margin="xsmall"/>
+                                        <Text color={this.props.data.color3}>Register</Text>
                                     </Box>
                                 </Link>
                             }
                             
                             {!this.state.isLoggedIn && 
                                 <Link to="/login" style={{ textDecoration: 'none' }}>
-                                    <Box direction="row" align="center">
+                                    <Box direction="row" align="center" gap="xsmall">
                                         <Login color={this.props.data.color2} size='20px' />
-                                        <Anchor label="Login" key="Login" color={this.props.data.color3}  margin="xsmall"/>
+                                        <Text color={this.props.data.color3}>Login</Text>
                                     </Box>
                                 </Link>
                             }

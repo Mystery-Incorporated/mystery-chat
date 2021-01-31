@@ -35,6 +35,18 @@ var userSchema = new Schema({
         unique: false,
         default: ''
     },
+    bio: {
+        type: String,
+        required: false,
+        unique: false,
+        default: ''
+    },
+    avatarSrc: {
+        type: String,
+        required: false,
+        unique: false,
+        default: ''
+    },
     password: {
         type: String,
         required: true

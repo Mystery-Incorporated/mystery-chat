@@ -9,12 +9,18 @@ import { Login } from "grommet-icons"
 
 class Loading extends Component {
 
+    _isMounted = false;
+
     constructor(props) {
         super(props)
         this.state = {
             x : null,
             y: null
         };
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     handleInputChange = (event) => {
@@ -29,10 +35,14 @@ class Loading extends Component {
     }
 
     componentDidMount() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(this.showPosition);
-        } else { 
-            //x.innerHTML = "Geolocation is not supported by this browser.";
+        this._isMounted = true;
+
+        if (this._isMounted) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(this.showPosition);
+            } else { 
+                //x.innerHTML = "Geolocation is not supported by this browser.";
+            }
         }
     }
 
