@@ -1,6 +1,7 @@
 require('dotenv').config()
 
 var Users = require("../models/User");
+var Notifications = require("../models/Notification");
 const withAuth = require('./middleware');
 const bcrypt = require('bcryptjs');
 const Cryptr = require('cryptr');
@@ -8,6 +9,7 @@ const cryptr = new Cryptr(process.env.SECRET);
 const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
 var cookie = require('cookie');
+const { func } = require('prop-types');
 
 function encode(email) {
     if (!email) return "";
@@ -47,6 +49,10 @@ function createSession(req, res, data) {
 
 function killSession(req, res) {
     return res.clearCookie("token").status(200).json({success:true});;
+}
+
+function getNotifications(user, callback) {
+    Notifications.find({username:user}).sort({createdAt: -1}).limit(25).then(data => callback(null, data));
 }
 
 function login(err, data, password, req, res) {
@@ -116,7 +122,7 @@ function verificationTokenValid(email, token) {
     }
 }
 
-function sendEmail(email, token, req, res) {
+function sendEmail(email, user, token, req, res) {
     var transporter = nodemailer.createTransport({ 
         service: 'gmail', 
         auth: { 
@@ -134,6 +140,14 @@ function sendEmail(email, token, req, res) {
 
     transporter.sendMail(mailOptions, function (err) {
         if (err) { console.log(err); }
+        else {
+            createNotification(user, {
+                title:"Email verification sent.",
+                subtitle:"Sent to " + user,
+                id: 99,
+                from: "system"
+            }, (err, data) => {if (err) console.log(err)})
+        }
     });
 }
 
@@ -166,9 +180,31 @@ function updateUserInfo(email, formData, callback) {
 
             Users.updateOne({ email: email }, { $set: user }, callback);
         }
-    })
+    })    
+}
 
-    
+function createNotification(user, data, callback) {
+    var noti = {
+        username: user,
+        title: data.title,
+        subtitle: data.subtitle,
+        data: {
+            id: data.id,
+            from: data.from
+        }
+    }
+    Notifications.create(noti, callback);
+}
+
+function readNotification(user, id, callback) {
+    Notifications.findOne({_id: id}, (err, data) => {
+        if (data && data.username == user) {
+            Notifications.updateOne({ _id: data._id}, { $set: {read:true} }, callback);
+        }
+        else {
+            callback(err, null);
+        }
+    });
 }
 
 module.exports = function(app) {
@@ -250,26 +286,45 @@ module.exports = function(app) {
 
         var payload = {
             identifier: decode(decoded.hashedID),
-            emailHash: decode(decoded.email),
+            emailHash: decode(decoded.emailHash),
             // playerName: decode(decoded.hashedPlayerName),
             // playerNickName: decode(decoded.hashedPlayerNickName),
             // verified: decode(decoded.hashedVerfied),
         }   
 
+
         findByUsername(payload.identifier, function(err, data) {
 
-            return res.status(200).json({
-                firstname: data.firstname,
-                lastname: data.lastname,
-                username: data.username,
-                avatar: data.avatar,
-                verified: data.verified,
-                avatarType:data.avatarType,
-                following: data.following
+            getNotifications(data.username, (error, notifications) => {
+
+                return res.status(200).json({
+                    firstname: data.firstname,
+                    lastname: data.lastname,
+                    username: data.username,
+                    avatar: data.avatar,
+                    verified: data.verified,
+                    avatarType:data.avatarType,
+                    following: data.following,
+                    notifications: notifications
+                });
             });
-            
         });
         
+    });
+
+    app.post('/api/read/notification', withAuth, (req, res) => {
+        
+        var cookies = cookie.parse(req.headers.cookie);
+        var token = cookies.token;
+        var decoded = jwt.verify(token, process.env.SECRET);
+        var email = decode(decoded.emailHash);
+        var id = decode(decoded.hashedID);
+
+        var formData = req.body;
+
+        readNotification(id, formData.id, (err, data) => {
+            return res.status(200).json({"msg": "read"});
+        });
     });
 
     app.get('/api/users/:user', function(req, res) {
@@ -306,7 +361,6 @@ module.exports = function(app) {
 
         var formData = req.body;
 
-        console.log(formData, id, email)
         if (formData.submitFor && formData.submitFor == id) {
 
             updateUserInfo(email, formData, (err, data) => {
@@ -330,10 +384,11 @@ module.exports = function(app) {
         var cookies = cookie.parse(req.headers.cookie);
         var token = cookies.token;
         var decoded = jwt.verify(token, process.env.SECRET);
+        
         var email = decode(decoded.emailHash);
+        var id = decode(decoded.hashedID);
 
-        sendEmail(email, generateVerificationToken(email), req, res);
-
+        sendEmail(email, id, generateVerificationToken(email), req, res);
         return res.status(200).json({ msg: 'success' });
     });
 

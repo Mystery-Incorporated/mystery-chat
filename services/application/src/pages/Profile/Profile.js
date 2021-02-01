@@ -220,7 +220,7 @@ class Profile extends Component {
                         justify="start"
                         align="center"
                         background={this.props.data.color5}
-                        pad="xsmall"
+                        pad="small"
                         round="2px"
                         gap="small"
                     >
@@ -236,7 +236,7 @@ class Profile extends Component {
                         justify="start"
                         align="center"
                         background={this.props.data.color7}
-                        pad="xsmall"
+                        pad="small"
                         round="2px"
                         gap="small"
                     >
