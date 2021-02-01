@@ -4,7 +4,7 @@ import { Link, Route, Switch, BrowserRouter } from 'react-router-dom';
 
 import { grommet, Grommet, Anchor, Box, Button, Header, Nav, Image, Text, ResponsiveContext, DropButton, Menu } from 'grommet';
 
-import { Login, Notes, Logout, Organization, User, StatusCritical, Refresh, CheckboxSelected, FormDown, Configure, Notification } from "grommet-icons";
+import { Login, Notes, Logout, Organization, User, StatusCritical, Refresh, CheckboxSelected, FormDown, Configure, Notification, Info, Chat, UserNew } from "grommet-icons";
 import "./Home.css";
 
 import {Banner, Logo} from 'Media';
@@ -14,11 +14,15 @@ import Avatar from 'react-avatar';
 
 class Home extends Component {
 
+    _isMounted = false;
+
     constructor(props) {
         super(props)
         this.state = {
             resent: false,
-            tag:''
+            tag:'',
+            parsedNotifications: [],
+            newNotifs: 0
         };
     }
 
@@ -32,9 +36,82 @@ class Home extends Component {
     onSubmit = (event) => {
         event.preventDefault();
     }
-    
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
     componentDidMount() {
-        this.setState(this.props.data);
+        this._isMounted = true;
+
+        if (this._isMounted) {
+            this.setState(this.props.data);
+
+            var notifs = []
+
+            this.props.data.notifications.forEach((element, i) => {
+                if (!element.read) this.setState({newNotifs: this.state.newNotifs + 1})
+                this.state.parsedNotifications.push(
+                    {
+                        label: 
+                            <Box
+                                width="300px"
+                                height="40px"
+                                alignSelf="center"
+                                direction="row"
+                                align="center"
+                                justify="center"
+                                pad={{"left":"small", "right":"small"}}
+                            >
+                                <Box
+                                    width="255px"
+                                    height="40px"
+                                    alignSelf="center"
+                                    direction="column"
+                                    align="start"
+                                    justify="center"
+                                    pad={{"left":"small", "right":"small"}}
+                                >
+                                    <Text color={this.props.data.color3}>
+                                        {element.title}
+                                    </Text>
+                                    <Text
+                                        color={this.props.data.color2}
+                                        size="xsmall"
+                                    >
+                                        {element.subtitle}
+                                    </Text>
+                                </Box>
+                                {!element.read && <Box width="8px" height="8px" background="red" round="100%"></Box>}
+                            </Box>
+                        ,
+                        onClick: () => {this.handleNotification(element, i)},
+                        icon: 
+                            <Box
+                                width="auto"
+                                height="auto"
+                                alignSelf="center"
+                                direction="column"
+                                align="center"
+                                justify="center"
+                            >
+                                {element.data.id == 0 && 
+                                    <UserNew size="20px"/>
+                                }
+
+                                {element.data.id == 1 && 
+                                    <Chat size="20px"/>
+                                }
+
+                                {element.data.id > 2 && 
+                                    <Info size="20px"/>
+                                }
+                                
+                            </Box>
+                    }
+                );
+            });
+        }
     }
 
     resendEmail() {
@@ -54,6 +131,39 @@ class Home extends Component {
         })
         .catch(err => {
             console.error(err);
+        });
+    }
+
+    handleNotification(element, i) {
+        this.setState({newNotifs: this.state.newNotifs - 1});
+        console.log(element);
+
+        fetch('/api/read/notification', {
+            method: 'POST',
+            body: JSON.stringify({
+                id:element._id
+            }),
+            headers: {
+                'Accept': 'application/json, text/plain, */*',  // It can be used to overcome cors errors
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => {
+            
+            return res.json();
+        })
+        .then(data => {
+            if ('error' in data) {
+                this.setState({error: data.msg});
+            }
+            else {
+                console.log(data);
+                //this.props.readNotification(i);
+                this.setState({newNotifs: this.state.newNotifs - 1});
+            }
+        }) 
+        .catch(err => {
+            alert('Error logging in please try again');
         });
     }
 
@@ -163,69 +273,20 @@ class Home extends Component {
                                 </Link>
 
                                 <Menu
-                                    children={
+                                    children={(props) =>
                                         <Box pad="small" className="hover-button" direction="row" justify="center" align="start">
                                             <Notification />
-                                            <Box width="8px" height="8px" background="red" round="100%">
-                                            </Box>
+                                            {this.state.newNotifs > 0 && <Box width="8px" height="8px" background="red" round="100%"></Box>}
                                         </Box>
                                     }
                                     plain
                                     size="large"
                                     dropProps={{ align: { top: 'bottom', left: 'left' } }}
-                                    items={[
-                                        {
-                                            label: 
-                                                <Box
-                                                    width="300px"
-                                                    height="40px"
-                                                    alignSelf="center"
-                                                    direction="row"
-                                                    align="center"
-                                                    justify="center"
-                                                    pad={{"left":"small", "right":"small"}}
-                                                >
-                                                    <Box
-                                                        width="255px"
-                                                        height="40px"
-                                                        alignSelf="center"
-                                                        direction="column"
-                                                        align="start"
-                                                        justify="center"
-                                                        pad={{"left":"small", "right":"small"}}
-                                                    >
-                                                        <Text color={this.props.data.color3}>
-                                                            Test Notification
-                                                        </Text>
-                                                        <Text
-                                                            color={this.props.data.color2}
-                                                            size="xsmall"
-                                                        >
-                                                            somet other notification
-                                                        </Text>
-                                                    </Box>
-                                                    <Box width="8px" height="8px" background="red" round="100%">
-                                                    </Box>
-                                                </Box>
-                                            ,
-                                            href: "",
-                                            icon: 
-                                                <Box
-                                                    width="auto"
-                                                    height="auto"
-                                                    alignSelf="center"
-                                                    direction="column"
-                                                    align="center"
-                                                    justify="center"
-                                                >
-                                                    <FormDown size="20px"/>
-                                                </Box>
-                                        }
-                                    ]}
+                                    items={this.state.parsedNotifications}
                                 />
                                 
                                 <Menu
-                                    children={<Box pad="small" className="hover-button"><FormDown /></Box>}
+                                    children={(props) => <Box pad="small" className="hover-button"><FormDown /></Box>}
                                     plain
                                     dropProps={{ align: { top: 'bottom', left: 'left' } }}
                                     items={[

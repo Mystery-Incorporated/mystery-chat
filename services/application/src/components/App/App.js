@@ -23,8 +23,8 @@ class App extends Component {
             avatar: '',
             username: '',
             following: [],
-            avatarType: 0
-            
+            avatarType: 0,
+            notifications: []
         };
 
         this.logout = this.logout.bind(this);
@@ -33,6 +33,7 @@ class App extends Component {
         this.getNameAlt = this.getNameAlt.bind(this);
         this.getFullName = this.getFullName.bind(this);
         this.formatDOB = this.formatDOB.bind(this);
+        this.readNotification = this.readNotification.bind(this);
     }
 
     formatDOB(dob) {
@@ -45,6 +46,12 @@ class App extends Component {
 
     getName() {
         return this.state.firstname.charAt(0).toUpperCase() + this.state.firstname.slice(1);
+    }
+
+    readNotification(i) {
+        let notifs = [ ...this.state.notifications ];
+        notifs[i] = {...notifs[i], read:true}
+        this.setState({notifications:notifs});
     }
 
     getNameAlt(name) {
@@ -69,7 +76,8 @@ class App extends Component {
             avatar: '',
             username: '',
             avatarType:0,
-            following: []
+            following: [],
+            notifications: []
         });
 
     }
@@ -113,7 +121,8 @@ class App extends Component {
                         isLoggedIn:true,
                         loading:false,
                         verified: data.verified,
-                        following: data.following
+                        following: data.following,
+                        notifications: data.notifications
                     });
                 }
             }
@@ -136,6 +145,7 @@ class App extends Component {
             getNameAlt:this.getNameAlt,
             getFullName:this.getFullName,
             formatDOB:this.formatDOB,
+            readNotification:this.readNotification,
             firstname:this.state.firstname,
             lastname:this.state.lastname,
             username:this.state.username,
@@ -143,7 +153,8 @@ class App extends Component {
             avatarType:this.state.avatarType,
             verified:this.state.verified,
             isLoggedIn:this.state.isLoggedIn,
-            following: this.state.following,
+            following:this.state.following,
+            notifications:this.state.notifications,
             color1: '#fff',
             color2: '#999',
             color3: '#555',
