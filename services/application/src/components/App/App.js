@@ -50,7 +50,8 @@ class App extends Component {
 
     readNotification(i) {
         let notifs = [ ...this.state.notifications ];
-        notifs[i] = {...notifs[i], read:true}
+        notifs[i].read = true;
+        console.log(notifs);
         this.setState({notifications:notifs});
     }
 

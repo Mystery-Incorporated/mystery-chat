@@ -82,10 +82,10 @@ class Home extends Component {
                                         {element.subtitle}
                                     </Text>
                                 </Box>
-                                {!element.read && <Box width="8px" height="8px" background="red" round="100%"></Box>}
+                                {!this.props.data.notifications[i].read && <Box width="8px" height="8px" background="red" round="100%"></Box>}
                             </Box>
                         ,
-                        onClick: () => {this.handleNotification(element, i)},
+                        onClick: (event) => {this.handleNotification(element, i)},
                         icon: 
                             <Box
                                 width="auto"
@@ -135,8 +135,8 @@ class Home extends Component {
     }
 
     handleNotification(element, i) {
-        this.setState({newNotifs: this.state.newNotifs - 1});
-        console.log(element);
+        //this.setState({newNotifs: this.state.newNotifs - 1});
+        //console.log(element);
 
         fetch('/api/read/notification', {
             method: 'POST',
@@ -158,12 +158,14 @@ class Home extends Component {
             }
             else {
                 console.log(data);
-                //this.props.readNotification(i);
                 this.setState({newNotifs: this.state.newNotifs - 1});
+                this.props.data.readNotification(i);
+                
             }
         }) 
         .catch(err => {
-            alert('Error logging in please try again');
+            console.log(err);
+            alert('Notification Error logging in please try again');
         });
     }
 
