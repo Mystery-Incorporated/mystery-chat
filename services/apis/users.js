@@ -39,7 +39,8 @@ function createSession(req, res, data) {
             lastname: data.lastname,
             username: data.username,
             avatar: data.avatar,
-            verified: data.verified
+            verified: data.verified,
+            avatarType:data.avatarType
         });        
     });
 }
@@ -145,7 +146,6 @@ function createUser(data, callback) {
         firstname: data.firstname,
         lastname: data.lastname,
         username: data.username,
-        avatar: data.avatar,
         dob: data.dob,
         password: pass
     };
@@ -249,8 +249,8 @@ module.exports = function(app) {
         var decoded = jwt.verify(token, process.env.SECRET);
 
         var payload = {
-            identifier: decode(decoded.hashedID), // not used in guest case
-            isGuest: decode(decoded.isGuest),
+            identifier: decode(decoded.hashedID),
+            emailHash: decode(decoded.email),
             // playerName: decode(decoded.hashedPlayerName),
             // playerNickName: decode(decoded.hashedPlayerNickName),
             // verified: decode(decoded.hashedVerfied),
@@ -263,7 +263,9 @@ module.exports = function(app) {
                 lastname: data.lastname,
                 username: data.username,
                 avatar: data.avatar,
-                verified: data.verified
+                verified: data.verified,
+                avatarType:data.avatarType,
+                following: data.following
             });
             
         });
@@ -277,13 +279,17 @@ module.exports = function(app) {
                 return res.status(404).json({ error: 1, msg: "Could not find user!" });
             }
             else {
+
                 var result = {
                     firstname: data.firstname,
                     lastname: data.lastname,
                     username: data.username,
                     avatar: data.avatar,
                     verified: data.verified,
-                    dob:data.dob
+                    dob:data.dob,
+                    bio:data.bio,
+                    avatarType:data.avatarType,
+                    sent:data.sent
                 };
                 return res.status(200).json(data);
             }
@@ -291,21 +297,33 @@ module.exports = function(app) {
     });
 
     app.post('/api/users/update', withAuth, function(req, res) {
+
         var cookies = cookie.parse(req.headers.cookie);
         var token = cookies.token;
         var decoded = jwt.verify(token, process.env.SECRET);
         var email = decode(decoded.emailHash);
+        var id = decode(decoded.hashedID);
 
         var formData = req.body;
 
-        updateUserInfo(email, formData, (err, data) => {
-            if (err || !data) {
-                return res.status(500).json({ error: 1, msg: "Could not update user!" });
-            }
-            else {
-                return res.status(200).json({data: "success"});
-            }
-        });
+        console.log(formData, id, email)
+        if (formData.submitFor && formData.submitFor == id) {
+
+            updateUserInfo(email, formData, (err, data) => {
+                if (err || !data) {
+                    console.log(err, data)
+                    return res.status(500).json({ error: 1, msg: "Could not update user!" });
+                }
+                else {
+                    return res.status(200).json({data: "success"});
+                }
+            });
+        }
+        else {
+            return res.status(401).json({ error: 1, msg: "Unauthorized!" });
+        }
+
+        
     });
 
     app.post('/api/sendVerification', (req, res) => {

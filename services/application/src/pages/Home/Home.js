@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Link, Route, Switch, BrowserRouter } from 'react-router-dom';
 
-import { grommet, Grommet, Anchor, Box, Button, Header, Nav, Image, Avatar, Text, ResponsiveContext, DropButton } from 'grommet';
+import { grommet, Grommet, Anchor, Box, Button, Header, Nav, Image, Text, ResponsiveContext, DropButton, Menu } from 'grommet';
 
-import { Login, Notes, Logout, Organization, User, StatusCritical, Refresh, CheckboxSelected } from "grommet-icons";
+import { Login, Notes, Logout, Organization, User, StatusCritical, Refresh, CheckboxSelected, FormDown, Configure, Notification } from "grommet-icons";
 import "./Home.css";
 
 import {Banner, Logo} from 'Media';
 import {Dashboard} from 'Components';
+
+import Avatar from 'react-avatar';
 
 class Home extends Component {
 
@@ -86,84 +88,225 @@ class Home extends Component {
                             justify="between" 
                             background={this.props.data.color1} 
                             pad="xsmall" 
-                            border="bottom"
                         >
                                 
                             <Box direction="row" align="center">
                                 <Link to={"/"} style={{ textDecoration: 'none' }}>
-                                    <Box
-                                        pad="none"
-                                        height="auto"
-                                        width="60px"
-                                        round="small"
-                                        direction="row"
-                                        align="center"
-                                        margin={{"left":"5px"}}
-                                        gap="xsmall"
-                                    >
-                                        <Image src={Logo} fit="contain"/>
-                                    </Box>
+                                    <ResponsiveContext.Consumer>
+                                        {responsive => responsive === "small" ? (
+                                            <Box
+                                                pad="none"
+                                                height="auto"
+                                                width="60px"
+                                                round="small"
+                                                direction="row"
+                                                align="center"
+                                                margin={{"left":"5px"}}
+                                                gap="xsmall"
+                                            >
+                                                <Image src={Logo} fit="contain"/>
+                                            </Box>
+                                        ) : (
+                                            <Box
+                                                pad="none"
+                                                height="auto"
+                                                width="160px"
+                                                round="small"
+                                                direction="row"
+                                                align="center"
+                                                margin={{"left":"5px"}}
+                                                gap="xsmall"
+                                            >
+                                                <Image src={Banner} fit="contain"/>
+                                            </Box>
+                                        )}
+                                    </ResponsiveContext.Consumer>
                                 </Link>
                             </Box>
                             <Nav direction="row" align="center">
-                                {!this.props.data.verified &&
-                                    <Box width={{"min":"200px"}} height="45px" direction="row" background={this.props.data.color3} round="medium" align="center" gap="small" pad="small">
-                                        <StatusCritical color={this.props.data.color2} />
-                                        <Text color={this.props.data.color2}>Email not verified!</Text>
-                                        {!this.state.resent ?
-                                            <Button 
-                                                size="small" 
-                                                color={this.props.data.color1} 
-                                                icon={<Refresh />} 
-                                                primary label="Resend" 
-                                                onClick={() => this.resendEmail()}
-                                                gap="xxsmall"
-                                                margin="none"
-                                            />
-                                        :
-                                            <Button 
-                                                size="small" 
-                                                color={this.props.data.color2} 
-                                                icon={<CheckboxSelected color={this.props.data.color3} />} 
-                                                primary label="Sent!" 
-                                                disabled="true"
-                                                gap="xxsmall"
-                                            />
-                                            
-                                        }
-                                    </Box>
-                                }
-
-                                <Link to={"/user/" + this.props.data.username} style={{ textDecoration: 'none' }}>
+                                
+                                <Link to={"/user/" + this.props.data.username} style={{ textDecoration: 'none' }} className="hover-button">
                                     <Box
                                         direction="row"
-                                        gap="xsmall"
+                                        gap="small"
                                         align="center"
                                         justify="center"
+                                        hoverIndicator
+                                        pad={{
+                                            "top":"xsmall",
+                                            "bottom":"xsmall",
+                                            "left":"small",
+                                            "right":"small"
+                                        }}
+                                        
                                     >
-                                        <Avatar background={this.props.data.color1}>
-                                            <User color="dark-1" />
-                                        </Avatar>
+                                        {this.props.data.avatarType == 0 ?
+                                            <Avatar 
+                                                name={this.props.data.getFullName()}
+                                                src={this.props.data.avatar} 
+                                                size="40" 
+                                                round={true}
+                                            />
+                                        :
+                                            <Avatar 
+                                                name={this.props.data.getFullName()}
+                                                githubHandle={this.props.data.avatar} 
+                                                size="40" 
+                                                round={true}
+                                            />
+                                        }
                                         <Text color={this.props.data.color3}>
-                                            {this.props.data.firstname}
+                                            {this.props.data.getName()}
                                         </Text>
                                     </Box>
                                     
                                 </Link>
 
-                                <Link to="/settings" style={{ textDecoration: 'none' }}>
-                                    <Box direction="row" align="center" gap="xsmall"  justify="center">
-                                        <Logout color={this.props.data.color3} size='20px' />
-                                        <Text color={this.props.data.color3}>Settings</Text>
-                                    </Box>
-                                </Link>
-
-                                <Link to="/logout" style={{ textDecoration: 'none' }}>
-                                    <Box direction="row" align="center" gap="xsmall"  justify="center">
-                                        <Logout color={this.props.data.color3} size='20px' />
-                                        <Text color={this.props.data.color3}>Logout</Text>
-                                    </Box>
-                                </Link>
+                                <Menu
+                                    children={
+                                        <Box pad="small" className="hover-button" direction="row" justify="center" align="start">
+                                            <Notification />
+                                            <Box width="8px" height="8px" background="red" round="100%">
+                                            </Box>
+                                        </Box>
+                                    }
+                                    plain
+                                    size="large"
+                                    dropProps={{ align: { top: 'bottom', left: 'left' } }}
+                                    items={[
+                                        {
+                                            label: 
+                                                <Box
+                                                    width="300px"
+                                                    height="40px"
+                                                    alignSelf="center"
+                                                    direction="row"
+                                                    align="center"
+                                                    justify="center"
+                                                    pad={{"left":"small", "right":"small"}}
+                                                >
+                                                    <Box
+                                                        width="255px"
+                                                        height="40px"
+                                                        alignSelf="center"
+                                                        direction="column"
+                                                        align="start"
+                                                        justify="center"
+                                                        pad={{"left":"small", "right":"small"}}
+                                                    >
+                                                        <Text color={this.props.data.color3}>
+                                                            Test Notification
+                                                        </Text>
+                                                        <Text
+                                                            color={this.props.data.color2}
+                                                            size="xsmall"
+                                                        >
+                                                            somet other notification
+                                                        </Text>
+                                                    </Box>
+                                                    <Box width="8px" height="8px" background="red" round="100%">
+                                                    </Box>
+                                                </Box>
+                                            ,
+                                            href: "",
+                                            icon: 
+                                                <Box
+                                                    width="auto"
+                                                    height="auto"
+                                                    alignSelf="center"
+                                                    direction="column"
+                                                    align="center"
+                                                    justify="center"
+                                                >
+                                                    <FormDown size="20px"/>
+                                                </Box>
+                                        }
+                                    ]}
+                                />
+                                
+                                <Menu
+                                    children={<Box pad="small" className="hover-button"><FormDown /></Box>}
+                                    plain
+                                    dropProps={{ align: { top: 'bottom', left: 'left' } }}
+                                    items={[
+                                        {
+                                            label: 
+                                                <Box
+                                                    alignSelf="center"
+                                                    direction="column"
+                                                    align="start"
+                                                    justify="center"
+                                                    pad={{"left":"small", "right":"small"}}
+                                                >
+                                                    <Text color={this.props.data.color3}>
+                                                        {this.props.data.getFullName()}
+                                                    </Text>
+                                                    <Text
+                                                        color={this.props.data.color2}
+                                                        size="xsmall"
+                                                    >
+                                                        See your profile
+                                                    </Text>
+                                                </Box>
+                                            ,
+                                            href: "/user/" + this.props.data.username,
+                                            icon: 
+                                                this.props.data.avatarType == 0 ?
+                                                    <Avatar 
+                                                        name={this.props.data.getFullName()}
+                                                        src={this.props.data.avatar} 
+                                                        size="40" 
+                                                        round={true}
+                                                    />
+                                                :
+                                                    <Avatar 
+                                                        name={this.props.data.getFullName()}
+                                                        githubHandle={this.props.data.avatar} 
+                                                        size="40" 
+                                                        round={true}
+                                                    />
+                                            ,
+                                        },
+                                        {
+                                            label: 
+                                                <Box
+                                                    alignSelf="center"
+                                                    direction="column"
+                                                    align="start"
+                                                    justify="center"
+                                                    pad={{"left":"small", "right":"small"}}
+                                                >
+                                                    <Text color={this.props.data.color3}>
+                                                        Settings
+                                                    </Text>
+                                                </Box>
+                                            ,
+                                            onClick: () => {},
+                                            icon: (
+                                                <Configure color={this.props.data.color3} size='20px' />
+                                            ),
+                                        },
+                                        {
+                                            label: 
+                                                <Box
+                                                    alignSelf="center"
+                                                    direction="column"
+                                                    align="start"
+                                                    justify="center"
+                                                    pad={{"left":"small", "right":"small"}}
+                                                >
+                                                    <Text color={this.props.data.color3}>
+                                                        Logout
+                                                    </Text>
+                                                </Box>
+                                            ,
+                                            href: "/logout",
+                                            icon: (
+                                                <Logout color={this.props.data.color3} size='20px' />
+                                            ),
+                                        },
+                                    ]}
+                                /> 
                             </Nav>
                         </Box>
                         <Box fill background='none'>

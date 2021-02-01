@@ -1,0 +1,12 @@
+.hover-button {
+
+    border-radius: 100px;
+}
+
+.hover-button:hover {
+    background-color: #eee;
+}
+
+.hover-button:hover *{
+    color: #444;
+}

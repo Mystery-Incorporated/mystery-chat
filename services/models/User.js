@@ -41,11 +41,11 @@ var userSchema = new Schema({
         unique: false,
         default: ''
     },
-    avatarSrc: {
-        type: String,
+    avatarType: {
+        type: Number,
         required: false,
         unique: false,
-        default: ''
+        default: 0
     },
     password: {
         type: String,
@@ -60,6 +60,18 @@ var userSchema = new Schema({
         type: Date,
         required: true,
         unique: false
+    },
+    following: {
+        type: [String],
+        required: true,
+        unique: false,
+        default: []
+    },
+    sent: {
+        type: Number,
+        required: false,
+        unique: false,
+        default: 0
     },
     verified: {
         type: Boolean,

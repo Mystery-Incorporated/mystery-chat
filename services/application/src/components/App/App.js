@@ -21,16 +21,42 @@ class App extends Component {
             firstname: '',
             lastname: '',
             avatar: '',
-            username: ''
+            username: '',
+            following: [],
+            avatarType: 0
             
         };
 
         this.logout = this.logout.bind(this);
         this.login = this.login.bind(this);
+        this.getName = this.getName.bind(this);
+        this.getNameAlt = this.getNameAlt.bind(this);
+        this.getFullName = this.getFullName.bind(this);
+        this.formatDOB = this.formatDOB.bind(this);
+    }
+
+    formatDOB(dob) {
+        if (dob) {
+            var date = Date.parse(dob);
+            var options = { month: 'long', day: 'numeric' };
+            return new Intl.DateTimeFormat('en-US', options).format(date);
+        }
+    }
+
+    getName() {
+        return this.state.firstname.charAt(0).toUpperCase() + this.state.firstname.slice(1);
+    }
+
+    getNameAlt(name) {
+        return name.charAt(0).toUpperCase() + name.slice(1);
+    }
+
+    getFullName() {
+        return this.state.firstname.charAt(0).toUpperCase() + this.state.firstname.slice(1) + " " + this.state.lastname.charAt(0).toUpperCase() + this.state.lastname.slice(1);;
     }
 
     login(data) {
-        this.setState({isLoggedIn: true, firstname:data.firstname, lastname:data.lastname, verified:data.verified, avatar: data.avatar, username: data.username});
+        this.setState({isLoggedIn: true, firstname:data.firstname, lastname:data.lastname, verified:data.verified, avatar: data.avatar, username: data.username, avatarType:data.avatarType});
     }
 
     logout() {
@@ -41,7 +67,9 @@ class App extends Component {
             firstname: '',
             lastname: '',
             avatar: '',
-            username: ''
+            username: '',
+            avatarType:0,
+            following: []
         });
 
     }
@@ -80,10 +108,12 @@ class App extends Component {
                         lastname: data.lastname,
                         username: data.username,
                         avatar: data.avatar,
+                        avatarType:data.avatarType,
                         msg: "USER LOGGED IN!",
                         isLoggedIn:true,
                         loading:false,
-                        verified: data.verified
+                        verified: data.verified,
+                        following: data.following
                     });
                 }
             }
@@ -102,18 +132,25 @@ class App extends Component {
         var propsData = {
             login: this.login,
             logout:this.logout,
-            logout:this.logout,
+            getName:this.getName,
+            getNameAlt:this.getNameAlt,
+            getFullName:this.getFullName,
+            formatDOB:this.formatDOB,
             firstname:this.state.firstname,
             lastname:this.state.lastname,
             username:this.state.username,
             avatar:this.state.avatar,
+            avatarType:this.state.avatarType,
             verified:this.state.verified,
             isLoggedIn:this.state.isLoggedIn,
+            following: this.state.following,
             color1: '#fff',
             color2: '#999',
             color3: '#555',
             color4: '#4b9cd5',
-            color5: '#aa3333'
+            color5: '#aa3333',
+            color6: '#e12727',
+            color7: '#e19027'
         };
 
         var content = this.state.loading ? <Loading data={propsData}/> : <Home data={propsData}/>;
