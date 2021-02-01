@@ -42,9 +42,8 @@ class Logout extends Component {
             }
         })
         .then(res => {
-            if (res.status === 200 && this._isMounted) {
-                this.props.data.logout();
-            }
+            
+            this.props.data.logout();
             this.props.history.push('/');
         })
         .catch(err => {
