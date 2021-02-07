@@ -1,6 +1,7 @@
 .hover-button {
 
     border-radius: 100px;
+    cursor: pointer;
 }
 
 .hover-button:hover {
@@ -10,3 +11,49 @@
 .hover-button:hover *{
     color: #444;
 }
+
+.selectable {
+    cursor: pointer;
+}
+
+.selectable:hover, .selected {
+    background-color: #ddd;
+}
+
+/* Works on Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(182, 182, 182, 0.719) rgba(71, 71, 71, 0);
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+    width: 12px;
+}   
+
+*::-webkit-scrollbar-track {
+    background: rgba(71, 71, 71, 0);
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: rgba(182, 182, 182, 0.719);
+    border-radius: 20px;
+    border: 3px solid none;
+}
+
+.message {
+    display: flex;
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.message:hover {
+    background-color: #eee;
+}
+
+.userMsg {
+    background-color: rgba(211, 225, 250, 0);
+}
+
+

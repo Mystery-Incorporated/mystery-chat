@@ -33,6 +33,8 @@ class App extends Component {
         this.getNameAlt = this.getNameAlt.bind(this);
         this.getFullName = this.getFullName.bind(this);
         this.formatDOB = this.formatDOB.bind(this);
+        this.formatDate = this.formatDate.bind(this);
+        this.formatDateTime = this.formatDateTime.bind(this);
         this.readNotification = this.readNotification.bind(this);
     }
 
@@ -44,8 +46,24 @@ class App extends Component {
         }
     }
 
+    formatDate(date) {
+        if (date) {
+            var date = Date.parse(date);
+            var options = { };
+            return new Intl.DateTimeFormat('en-US', options).format(date);
+        }
+    }
+
+    formatDateTime(date) {
+        if (date) {
+            var date = Date.parse(date);
+            var options = { dateStyle: 'medium', timeStyle: 'short' };
+            return new Intl.DateTimeFormat('en-US', options).format(date);
+        }
+    }
+
     getName() {
-        return this.state.firstname.charAt(0).toUpperCase() + this.state.firstname.slice(1);
+        return this.getNameAlt(this.state.firstname);
     }
 
     readNotification(i) {
@@ -56,15 +74,21 @@ class App extends Component {
     }
 
     getNameAlt(name) {
-        return name.charAt(0).toUpperCase() + name.slice(1);
+        var name = name.toLowerCase().split(' ');
+        for (var i = 0; i < name.length; i++) {
+
+            name[i] = name[i].charAt(0).toUpperCase() + name[i].substring(1);     
+        }
+
+        return name.join(' ');
     }
 
     getFullName() {
-        return this.state.firstname.charAt(0).toUpperCase() + this.state.firstname.slice(1) + " " + this.state.lastname.charAt(0).toUpperCase() + this.state.lastname.slice(1);;
+        return this.getNameAlt(this.state.firstname) + " " + this.getNameAlt(this.state.lastname);;
     }
 
     login(data) {
-        this.setState({isLoggedIn: true, firstname:data.firstname, lastname:data.lastname, verified:data.verified, avatar: data.avatar, username: data.username, avatarType:data.avatarType});
+        this.setState({isLoggedIn: true, firstname:data.firstname, lastname:data.lastname, verified:data.verified, avatar: data.avatar, username: data.username, avatarType:data.avatarType, following:data.following, notifications:data.notifications});
     }
 
     logout() {
@@ -146,6 +170,8 @@ class App extends Component {
             getNameAlt:this.getNameAlt,
             getFullName:this.getFullName,
             formatDOB:this.formatDOB,
+            formatDate:this.formatDate,
+            formatDateTime:this.formatDateTime,
             readNotification:this.readNotification,
             firstname:this.state.firstname,
             lastname:this.state.lastname,
@@ -162,7 +188,12 @@ class App extends Component {
             color4: '#4b9cd5',
             color5: '#aa3333',
             color6: '#e12727',
-            color7: '#e19027'
+            color7: '#e19027',
+            color8: '#eee',
+            color9: '#ddd',
+            color10: '#ccc',
+            color11: '#e1e7ee',
+            color12: '#222',
         };
 
         var content = this.state.loading ? <Loading data={propsData}/> : <Home data={propsData}/>;
@@ -172,6 +203,9 @@ class App extends Component {
           <BrowserRouter>
                 <Switch>
                     <Route exact path="/" component={() => 
+                        content
+                    }/>
+                    <Route exact path="/c/:id" component={() => 
                         content
                     }/>
                     <Route exact path="/login" component={() =>

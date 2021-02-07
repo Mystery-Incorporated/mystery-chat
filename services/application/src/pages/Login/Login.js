@@ -27,6 +27,8 @@ import {Spinner} from 'Components';
 
 class Login extends Component {
 
+    _isMounted = false;
+
     constructor(props) {
         super(props)
         this.state = {
@@ -108,21 +110,27 @@ class Login extends Component {
     }
 
     componentDidMount() {
-        fetch('/api/checkToken', {
-            headers: {
-                'Accept': 'application/json, text/plain, */*',  // It can be used to overcome cors errors
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(res => {
-            console.log(res.status);
-            if (res.status === 200) {
-                this.props.history.push('/');
-            } 
-        }) 
-        .catch(err => {
-            console.error(err);
-        });
+        this._isMounted = true;
+
+        if (this._isMounted) {
+
+            console.log("at login");
+            fetch('/api/checkToken', {
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',  // It can be used to overcome cors errors
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => {
+                console.log(res.status);
+                if (res.status === 200) {
+                    this.props.history.push('/');
+                } 
+            }) 
+            .catch(err => {
+                console.error(err);
+            });
+        }
     }
 
     render() {

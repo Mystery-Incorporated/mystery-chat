@@ -36,14 +36,21 @@ function createSession(req, res, data) {
     
     findByUsername(data.username, function(err, data) {
 
-        return res.cookie('token', token, { httpOnly: true }).status(200).json({
-            firstname: data.firstname,
-            lastname: data.lastname,
-            username: data.username,
-            avatar: data.avatar,
-            verified: data.verified,
-            avatarType:data.avatarType
-        });        
+        getNotifications(data.username, (error, notifications) => {
+
+            return res.cookie('token', token, { httpOnly: true }).status(200).json({
+                firstname: data.firstname,
+                lastname: data.lastname,
+                username: data.username,
+                avatar: data.avatar,
+                verified: data.verified,
+                avatarType:data.avatarType,
+                following: data.following,
+                notifications: notifications
+            });
+        });
+
+                
     });
 }
 

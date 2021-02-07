@@ -32,24 +32,31 @@ class Logout extends Component {
     componentDidMount() {
         this._isMounted = true;
 
-        document.cookie = "token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;"
-        fetch('/api/signout', {
-            method: 'POST',
-            body: JSON.stringify(this.state),
-            headers: {
-                'Accept': 'application/json, text/plain, */*',  // It can be used to overcome cors errors
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(res => {
-            
-            this.props.data.logout();
-            this.props.history.push('/');
-        })
-        .catch(err => {
-            console.error(err);
-            alert('Error checking token');
-        });
+        //document.cookie = "token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;"
+
+        if (this._isMounted && this.props.data.isLoggedIn) {
+            fetch('/api/signout', {
+                method: 'POST',
+                body: JSON.stringify(this.state),
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',  // It can be used to overcome cors errors
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => {
+                
+                this.props.data.logout();
+                setTimeout(() => {  this.props.history.push('/'); }, 500);
+                
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Error checking token');
+            });
+        }
+        else if (this._isMounted) {
+            setTimeout(() => {  this.props.history.push('/'); }, 500);
+        }
     }
 
     render() {
