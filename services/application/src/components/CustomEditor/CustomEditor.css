@@ -1,0 +1,26 @@
+.editor-container {
+    /* width="100%"
+                height={{"min":"120px"}}
+                margin={{"top":"medium"}}
+                background="none"
+                border={{
+                    "color": this.props.data.color10,
+                    "size": "xsmall",
+                    "side": "all"
+                }}
+                direction="column-reverse"
+                round="10px" */
+
+    width: 100%;
+    height: auto;
+    margin-top: 15px;
+    background-color: none;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.public-DraftEditor-content {
+    max-width: 100%;
+    min-height: 80px;
+    font-size: 15px;
+}

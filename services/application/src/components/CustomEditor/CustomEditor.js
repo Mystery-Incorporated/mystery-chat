@@ -68,40 +68,15 @@ class CustomEditor extends Component {
     render() {
 
         return (
-            <Box
-                width="100%"
-                height={{"min":"120px"}}
-                margin={{"top":"medium"}}
-                background="none"
-                border={{
-                    "color": this.props.data.color10,
-                    "size": "xsmall",
-                    "side": "all"
-                }}
-                direction="column"
-                round="10px"
+            <div               
+                className="flex-column-reverse editor-container"
                 onFocus={this.focusEditor}
                 onClick={this.focusEditor}
 
-            >
-                <Box
-                    pad="small"
-                    width="100%"
-                    direction="row"
-                    flex="grow"
-                    onFocus={this.focusEditor}
-                >
-                    <Editor
-                        ref={this.setEditor}
-                        editorState={this.props.editorState}
-                        onChange={this.props.onEditorChange}
-                        onClick={this.focusEditor}
-                    />
-                </Box>
-                
+            >               
                 <Box
                     width="100%"
-                    height="45px"
+                    height={{"min":"45px", "max":"45px"}}
                     pad="small"
                     style={{
                         "borderBottomRightRadius":"10px",
@@ -144,7 +119,22 @@ class CustomEditor extends Component {
                     </Box>
 
                 </Box>
-            </Box>
+                <Box
+                    pad="small"
+                    width="100%"
+                    direction="row"
+                    flex="grow"
+                    onFocus={this.focusEditor}
+                >
+                    <Editor
+                        ref={this.setEditor}
+                        editorState={this.props.editorState}
+                        onChange={this.props.onEditorChange}
+                        onClick={this.focusEditor}
+                        editorClassName={"editor"}
+                    />
+                </Box>
+            </div>
         );
     }
 }

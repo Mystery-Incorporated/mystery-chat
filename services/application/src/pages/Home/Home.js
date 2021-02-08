@@ -950,18 +950,19 @@ class Home extends Component {
                                         }}
                                         
                                     >
+                                        {console.log(this.props.data.avatarType, this.props.data.avatar)}
                                         {this.props.data.avatarType == 0 ?
                                             <Avatar 
                                                 name={this.props.data.getFullName()}
                                                 src={this.props.data.avatar} 
-                                                size="40" 
+                                                size="40px" 
                                                 round={true}
                                             />
                                         :
                                             <Avatar 
                                                 name={this.props.data.getFullName()}
                                                 githubHandle={this.props.data.avatar} 
-                                                size="40" 
+                                                size="41px" 
                                                 round={true}
                                             />
                                         }
